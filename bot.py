@@ -10,81 +10,44 @@ from telegram.ext import (
 import openai
 import google.generativeai as genai
 
-# ================== TOKENS ==================
+# ===== TOKENS =====
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# ================== AI SETUP ==================
 openai.api_key = OPENAI_API_KEY
 genai.configure(api_key=GEMINI_API_KEY)
 
-# ================== USER MODE ==================
 user_mode = {}
 
-# ================== COMMANDS ==================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "👋 أهلاً بك في البوت الذكي\n\n"
-        "📌 اختر المجال من قائمة Menu بالأسفل 👇\n\n"
+        "👋 أهلاً بك\n"
+        "اختر المجال من قائمة Menu 👇\n\n"
         "📘 المرحلة الأولى: تعليم + برمجة\n"
         "💬 المرحلة الثانية: أسئلة عامة"
     )
 
 async def stage1(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_mode[update.message.from_user.id] = "gpt"
-    await update.message.reply_text(
-        "✅ تم اختيار المرحلة الأولى (تعليم + برمجة)\n"
-        "✍️ اكتب سؤالك الآن"
-    )
+    user_mode[update.message.from_user.id] = "gemini"
+    await update.message.reply_text("✅ المرحلة الأولى مفعلة")
 
 async def stage2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_mode[update.message.from_user.id] = "gemini"
-    await update.message.reply_text(
-        "✅ تم اختيار المرحلة الثانية (أسئلة عامة)\n"
-        "✍️ اكتب سؤالك الآن"
-    )
+    await update.message.reply_text("✅ المرحلة الثانية مفعلة")
 
-# ================== MESSAGES ==================
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     text = update.message.text
 
     if user_id not in user_mode:
-        await update.message.reply_text(
-            "❗ من فضلك اختر المرحلة من قائمة Menu أولاً"
-        )
+        await update.message.reply_text("❗ اختر مرحلة من Menu أولاً")
         return
 
-    try:
-        if user_mode[user_id] == "gpt":
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "أنت أستاذ جامعي ومبرمج محترف، تشرح بأسلوب مبسط وواضح مع أمثلة."
-                    },
-                    {
-                        "role": "user",
-                        "content": text
-                    }
-                ]
-            )
-            reply = response.choices[0].message.content
+    model = genai.GenerativeModel("gemini-pro")
+    reply = model.generate_content(text).text
+    await update.message.reply_text(reply)
 
-        else:
-            model = genai.GenerativeModel("gemini-pro")
-            reply = model.generate_content(text).text
-
-        await update.message.reply_text(reply)
-
-    except Exception:
-        await update.message.reply_text(
-            "⚠️ حدث خطأ مؤقت، حاول مرة أخرى"
-        )
-
-# ================== MAIN ==================
 def main():
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
