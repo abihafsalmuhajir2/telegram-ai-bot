@@ -72,6 +72,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 ]
             )
             reply = response.choices[0].message.content
+
         else:
             model = genai.GenerativeModel("gemini-pro")
             reply = model.generate_content(text).text
@@ -79,7 +80,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(reply)
 
     except Exception:
-        await update.message.reply_text("⚠️ حدث خطأ مؤقت، حاول مرة أخرى")
+        await update.message.reply_text(
+            "⚠️ حدث خطأ مؤقت، حاول مرة أخرى"
+        )
 
 # ================== MAIN ==================
 def main():
