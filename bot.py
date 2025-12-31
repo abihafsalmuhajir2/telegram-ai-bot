@@ -10,7 +10,7 @@ from telegram.ext import (
 import openai
 import google.generativeai as genai
 
-# ===== TOKENS =====
+
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
