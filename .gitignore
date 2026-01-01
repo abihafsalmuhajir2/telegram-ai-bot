@@ -1,0 +1,28 @@
+# ملفات بيئة Python
+venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ملفات النظام
+.DS_Store
+Thumbs.db
+
+# ملفات السجلات
+*.log
+*.sqlite
+
+# ملفات مؤقتة
+temp/
+tmp/
+
+# ملفات IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ملفات Render
+.render.yaml
