@@ -11,7 +11,7 @@ import requests
 
 # تحميل المتغيرات
 load_dotenv()
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN") or os.getenv("TOKEN")  # <-- التعديل هنا
 HF_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
 
 # إعداد التسجيل
@@ -139,29 +139,38 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     if not TOKEN:
-        print("❌ خطأ: TELEGRAM_BOT_TOKEN غير موجود")
-        print("✅ الحل: أضفه في Render → Environment Variables")
+        print("=" * 50)
+        print("❌ خطأ: TOKEN غير موجود")
+        print("✅ الحل: أضف في Render → Environment Variables:")
+        print("    1. TELEGRAM_BOT_TOKEN")
+        print("    2. أو TOKEN")
+        print("=" * 50)
         return
     
-    app = Application.builder().token(TOKEN).build()
-    
-    # الأوامر
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CommandHandler("status", status_command))
-    
-    # الرسائل
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    
-    print("=" * 50)
-    print("🚀 بوت مشروع التخرج الذكي")
-    print("🤖 مع Hugging Face AI (مجاني)")
-    print("=" * 50)
-    print(f"🔗 Hugging Face: {'✅' if HF_TOKEN else '❌'}")
-    print("💬 أرسل /start في Telegram")
-    print("=" * 50)
-    
-    app.run_polling()
+    try:
+        app = Application.builder().token(TOKEN).build()
+        
+        # الأوامر
+        app.add_handler(CommandHandler("start", start))
+        app.add_handler(CommandHandler("help", help_command))
+        app.add_handler(CommandHandler("status", status_command))
+        
+        # الرسائل
+        app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+        
+        print("=" * 50)
+        print("🚀 بوت مشروع التخرج الذكي")
+        print("🤖 مع Hugging Face AI (مجاني)")
+        print("=" * 50)
+        print(f"✅ Token موجود: {'نعم' if TOKEN else 'لا'}")
+        print(f"🔗 Hugging Face: {'✅' if HF_TOKEN else '❌'}")
+        print("💬 أرسل /start في Telegram")
+        print("=" * 50)
+        
+        app.run_polling()
+    except Exception as e:
+        print(f"❌ خطأ في التشغيل: {e}")
+        print("🔧 جرب: تحقق من التوكن أو إصدار المكتبات")
 
 if __name__ == "__main__":
     main()
